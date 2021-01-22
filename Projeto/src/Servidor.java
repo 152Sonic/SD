@@ -15,14 +15,14 @@ class ServerWorker implements Runnable{
         try{
             DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             DataOutputStream out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-            String c;
+            int c;
             boolean b;
 
 
             do {
-                c = in.readUTF();
+                c = in.readInt();
                 switch (c) {
-                    case ("Registar"):
+                    case 2:
                         b = users.registar(in);
                         if (b) {
                             out.writeUTF("Registado com sucesso");
@@ -32,13 +32,14 @@ class ServerWorker implements Runnable{
                             out.flush();
                         }
                         break;
-                    case ("Utilizadores"):
+                    case 3:
                         int total = users.getusers().size();
                         out.writeInt(total);
                         out.flush();
                         break;
-                    case("Login"):
+                    case 1:
                         b = users.login(in);
+                        out.writeBoolean(b);
                         if(b){
                             out.writeUTF("Autenticado com sucesso");
                             out.flush();
@@ -47,10 +48,16 @@ class ServerWorker implements Runnable{
                             out.flush();
                         }
                         break;
+                    case 4:
+                        System.out.println("Entrei");
+                        int res = users.quantosLoc(in);
+                        out.writeInt(res);
+                        out.flush();
+                        break;
                     default:
                         break;
                 }
-            }while(!c.equals("Sair"));
+            }while(c!=0);
 
         }catch(IOException e){
             e.printStackTrace();

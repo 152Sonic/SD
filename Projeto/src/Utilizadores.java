@@ -74,4 +74,15 @@ public class Utilizadores {
             l.unlock();
         }
     }
+
+    public int quantosLoc(DataInputStream in) throws IOException{
+        int total = 0;
+        int x = in.readInt();
+        int y = in.readInt();
+        for(Utilizador u : users.values()){
+            if(u.getX() == x  && u.getY() == y)
+                total++;
+        }
+        return total;
+    }
 }
