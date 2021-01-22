@@ -20,6 +20,14 @@ public class Utilizadores {
 
     }
 
+    public Map<String,Utilizador> getusers(){
+        Map<String,Utilizador> aux = new HashMap<>();
+        for(Utilizador u : users.values()){
+            aux.put(u.getNome(),u);
+        }
+        return aux;
+    }
+
     public boolean registar(DataInputStream in) throws IOException {
         Utilizador u = Utilizador.deserialize(in);
         l.lock();

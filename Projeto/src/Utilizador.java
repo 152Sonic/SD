@@ -35,6 +35,7 @@ public class Utilizador {
     }
 
     public void serialize(DataOutputStream out) throws IOException {
+        out.writeUTF("Registar");
         out.writeUTF(this.nome);
         out.writeUTF(this.pass);
         out.writeInt(this.x);
