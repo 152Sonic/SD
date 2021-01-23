@@ -1,19 +1,24 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 class ServerWorker implements Runnable {
     private Socket socket;
     private Utilizadores users;
+    private Map<Localizacao,List<String>> localizacoes;
     private String u;
     private ReentrantLock l;
     private Condition c;
 
-    public ServerWorker(Socket socket, Utilizadores users){
+    public ServerWorker(Socket socket, Utilizadores users,Map<Localizacao,List<String>> loc){
         this.socket = socket;
         this.users = users;
         this.u = new String();
+        this.localizacoes = loc;
         this.l = new ReentrantLock();
         this.c = l.newCondition();
     }
@@ -78,6 +83,7 @@ class ServerWorker implements Runnable {
     }
 
     public  int interpretadorLogin(DataInputStream in,DataOutputStream out) throws IOException{
+        System.out.println(localizacoes);
         int flag =0;
         int c;
         String r;
@@ -90,12 +96,24 @@ class ServerWorker implements Runnable {
                     if(!r.equals("")){
                         out.writeBoolean(true);
                         this.u = r;
-                        flag = 1;
                         out.writeUTF("Autenticado com sucesso");
                         out.flush();
-                        users.atualizaLoc(in,u);
-                        out.writeUTF("Localização atualizada!");
-                        out.flush();
+                        boolean d = users.estadoDoente(in);
+                        if(!d) {
+                            out.writeBoolean(true);
+                            flag = 1;
+                            out.writeUTF("Pode continuar");
+                            out.flush();
+                            users.atualizaLoc(in, u,localizacoes);
+                            System.out.println(localizacoes);
+                            out.writeUTF("Localização atualizada!");
+                            out.flush();
+                        }
+                        else {
+                            out.writeBoolean(false);
+                            out.writeUTF("Esta doente. Aplicacao  indisponivel.");
+                            out.flush();
+                        }
                     } else {
                         out.writeBoolean(false);
                         out.writeUTF("Dados de login errados");
@@ -144,13 +162,14 @@ class ServerWorker implements Runnable {
                     out.flush();
                     break;
                 case 2:
-                    users.atualizaLoc(in,u);
+                    users.atualizaLoc(in,u,localizacoes);
                     out.writeUTF("Localização atualizada!");
                     out.flush();
                     break;
                 case 3:
                     users.quero_ir(in, out);
                     break;
+                    
                 default:
                     break;
             }
