@@ -8,6 +8,7 @@ public class Utilizador {
     private int y;
     private boolean doente;
     private boolean online;
+    private boolean contacto;
 
     public Utilizador (){
         this.nome = new String();

@@ -1,10 +1,9 @@
+import jdk.jshell.execution.Util;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -137,7 +136,6 @@ public class Utilizadores {
                 nomes = new ArrayList<>();
                 nomes.add(u);
             }
-            System.out.println(nomes);
             loca.put(l,nomes);
             users.get(u).setX(x);
             users.get(u).setY(y);
@@ -160,6 +158,28 @@ public class Utilizadores {
         }finally {
             lock.unlock();
         }
+    }
+
+    public Map<Localizacao,Map.Entry<Integer,Integer>> mapa(Map<Localizacao,List<String>> localizacao){
+        Map<Localizacao,Map.Entry<Integer,Integer>> map = new HashMap<>();
+        int total;
+        int doentes = 0;
+        lock.lock();
+        try {
+            for (Map.Entry<Localizacao, List<String>> aux : localizacao.entrySet()) {
+                Localizacao l = aux.getKey();
+                for (String s : aux.getValue()) {
+                    if (this.users.get(s).isDoente())
+                        doentes++;
+                }
+                total = aux.getValue().size();
+                map.put(l, new AbstractMap.SimpleEntry<>(total, doentes));
+                doentes = 0;
+            }
+        }finally {
+            lock.unlock();
+        }
+        return map;
     }
 
 

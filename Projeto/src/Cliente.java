@@ -1,11 +1,14 @@
 
 import java.net.Socket;
 import java.io.*;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Cliente {
 
-    public static Utilizador parseLine (String userInput) {
+    public static Utilizador parseLine(String userInput) {
         String [] tokens = userInput.split(" ");
         return new Utilizador(
                 tokens[0],
@@ -16,9 +19,7 @@ public class Cliente {
                 false);
     }
 
-
-
-    public static void main (String [] args) throws IOException {
+    public static void main(String [] args) throws IOException {
         int flag = 0;
         Socket socket = new Socket("localhost", 12345);
         BufferedReader systemIn = new BufferedReader(new InputStreamReader(System.in));
@@ -41,7 +42,6 @@ public class Cliente {
         Menu m = new Menu();
         boolean b;
         int flag = 0;
-
         String userInput;
         String resposta;
         do{
@@ -97,13 +97,7 @@ public class Cliente {
                     System.out.print("Password: ");
                     userInput = systemIn.readLine();
                     String passRegisto = userInput;
-                    System.out.print("Coordenada X: ");
-                    userInput = systemIn.readLine();
-                    int xRegisto = Integer.parseInt(userInput);
-                    System.out.print("Coordenada Y: ");
-                    userInput = systemIn.readLine();
-                    int yRegisto = Integer.parseInt(userInput);
-                    Utilizador u = new Utilizador(usRegisto,passRegisto,xRegisto,yRegisto,false,false);
+                    Utilizador u = new Utilizador(usRegisto,passRegisto,-1,-1,false,false);
                     System.out.println(u.toString());
                     u.serialize(out);
                     resposta = in.readUTF();
@@ -114,8 +108,6 @@ public class Cliente {
                     out.flush();
                     resposta = String.valueOf(in.readInt());
                     System.out.println(resposta);
-                    break;
-                case 4:
                     break;
                 default:
                     System.out.println("Insira opção valida");
@@ -187,6 +179,22 @@ public class Cliente {
                     out.flush();
                     resposta = in.readUTF();
                     System.out.println(resposta);
+                    break;
+                case 4:
+                    out.writeInt(4);
+                    out.flush();
+                    Map<Localizacao, Map.Entry<Integer,Integer>> mapa = new HashMap<>();
+                    int tamanho = in.readInt();
+                    int i = 0;
+                    while(i < tamanho){
+                        int x = in.readInt();
+                        int y = in.readInt();
+                        int total = in.readInt();
+                        int doentes = in.readInt();
+                        mapa.put(new Localizacao(x,y),new AbstractMap.SimpleEntry<>(total,doentes));
+                        i++;
+                    }
+                    m.mapaDoentes(mapa);
                     break;
                 default:
                     System.out.println("Insira opção valida");

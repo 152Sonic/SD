@@ -35,55 +35,12 @@ class ServerWorker implements Runnable {
                 else if (flag == 1)
                     flag = interpretadorServidor( in, out);
             }
-            /*int c;
-            boolean b;
-            do {
-                c = in.readInt();
-                switch (c) {
-                    case 1:
-                        b = users.login(in);
-                        out.writeBoolean(b);
-                        if(b){
-                            out.writeUTF("Autenticado com sucesso");
-                            out.flush();
-                        } else {
-                            out.writeUTF("Dados de login errados");
-                            out.flush();
-                        }
-                        break;
-                    case 2:
-                        b = users.registar(in);
-                        if (b) {
-                            out.writeUTF("Registado com sucesso");
-                            out.flush();
-                        } else {
-                            out.writeUTF("Nome de utilizador impossivel");
-                            out.flush();
-                        }
-                        break;
-                    case 3:
-                        int total = users.getusers().size();
-                        out.writeInt(total);
-                        out.flush();
-                        break;
-                    case 4:
-                        System.out.println("Entrei");
-                        int res = users.quantosLoc(in);
-                        out.writeInt(res);
-                        out.flush();
-                        break;
-                    default:
-                        break;
-                }
-            }while(c!=0);
-*/
         }catch(IOException | InterruptedException e){
             e.printStackTrace();
         }
     }
 
     public  int interpretadorLogin(DataInputStream in,DataOutputStream out) throws IOException{
-        System.out.println(localizacoes);
         int flag =0;
         int c;
         String r;
@@ -105,7 +62,6 @@ class ServerWorker implements Runnable {
                             out.writeUTF("Pode continuar");
                             out.flush();
                             users.atualizaLoc(in, u,localizacoes);
-                            System.out.println(localizacoes);
                             out.writeUTF("Localização atualizada!");
                             out.flush();
                         }
@@ -151,6 +107,7 @@ class ServerWorker implements Runnable {
             c = in.readInt();
             switch(c){
                 case 0:
+                    users.getusers().get(u).setOnline(false);
                     out.writeUTF("Até à próxima!");
                     out.flush();
                     flag = 2;
@@ -169,7 +126,16 @@ class ServerWorker implements Runnable {
                 case 3:
                     users.quero_ir(in, out);
                     break;
-                    
+                case 4:
+                    Map<Localizacao,Map.Entry<Integer,Integer>> m = users.mapa(this.localizacoes);
+                    out.writeInt(m.size());
+                    for(Map.Entry<Localizacao,Map.Entry<Integer,Integer>> aux: m.entrySet()){
+                        aux.getKey().serialize(out);
+                        out.writeInt(aux.getValue().getKey());
+                        out.writeInt(aux.getValue().getValue());
+                        out.flush();
+                    }
+                    break;
                 default:
                     break;
             }
