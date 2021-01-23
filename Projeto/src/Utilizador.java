@@ -8,6 +8,13 @@ public class Utilizador {
     private boolean doente;
 
 
+    public Utilizador (){
+        this.nome = new String();
+        this.pass = new String();
+        this.x = 0;
+        this.y = 0;
+        this.doente = false;
+    }
     public Utilizador (String nome, String pass, int x, int y){
         this.nome = nome;
         this.pass = pass;
@@ -95,5 +102,10 @@ public class Utilizador {
         sb.append(", doente=").append(doente);
         sb.append('}');
         return sb.toString();
+    }
+
+    public Utilizador clone(){
+        Utilizador u = new Utilizador(this.nome, this.pass, this.x, this.y, this.doente);
+        return u;
     }
 }

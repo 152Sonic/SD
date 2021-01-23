@@ -13,6 +13,9 @@ public class Menu {
     public void menuClienteServidor(){
         System.out.println();
         System.out.println("--------------- C L I E N T E ---------------");
+        System.out.println("0 - Sair");
         System.out.println("1 - Numero de pessoas numa dada localizacao");
+        System.out.println("2 - Atualizar localização atual");
+        System.out.println("3 - Quero Ir");
     }
 }

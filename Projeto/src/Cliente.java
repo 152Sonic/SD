@@ -40,6 +40,7 @@ public class Cliente {
         Menu m = new Menu();
         boolean b;
         int flag = 0;
+
         String userInput;
         String resposta;
         do{
@@ -60,6 +61,17 @@ public class Cliente {
                     out.writeUTF(p);
                     out.flush();
                     b = in.readBoolean();
+                    resposta = in.readUTF();
+                    System.out.println(resposta);
+                    System.out.print("Coordenada x: ");
+                    userInput = systemIn.readLine();
+                    int x = Integer.parseInt(userInput);
+                    System.out.print("Coordenada y: ");
+                    userInput = systemIn.readLine();
+                    int y = Integer.parseInt(userInput);
+                    out.writeInt(x);
+                    out.writeInt(y);
+                    out.flush();
                     resposta = in.readUTF();
                     System.out.println(resposta);
                     if(b) flag = 1;
@@ -100,6 +112,8 @@ public class Cliente {
     public static int interpretadorServidor(BufferedReader systemIn, DataInputStream in, DataOutputStream out) throws IOException{
         Menu m = new Menu();
         boolean b;
+        int Cx;
+        int Cy;
         int flag = 1;
         String userInput;
         String resposta;
@@ -109,19 +123,54 @@ public class Cliente {
             Scanner scanner = new Scanner(userInput);
             int c = scanner.nextInt();
             switch (c) {
+                case 0:
+                    out.writeInt(0);
+                    out.flush();
+                    resposta = in.readUTF();
+                    System.out.println(resposta);
+                    flag = 2;
+                    break;
                 case 1:
                     System.out.print("Coordenada x: ");
                     userInput = systemIn.readLine();
-                    int xC = Integer.parseInt(userInput);
+                    Cx = Integer.parseInt(userInput);
                     System.out.print("Coordenada y: ");
                     userInput = systemIn.readLine();
-                    int yC = Integer.parseInt(userInput);
-                    out.writeInt(4);
-                    out.writeInt(xC);
-                    out.writeInt(yC);
+                    Cy = Integer.parseInt(userInput);
+                    out.writeInt(1);
+                    out.writeInt(Cx);
+                    out.writeInt(Cy);
                     out.flush();
                     int res = in.readInt();
                     System.out.println(res);
+                    break;
+                case 2:
+                    System.out.print("Coordenada x: ");
+                    userInput = systemIn.readLine();
+                    Cx = Integer.parseInt(userInput);
+                    System.out.print("Coordenada y: ");
+                    userInput = systemIn.readLine();
+                    Cy = Integer.parseInt(userInput);
+                    out.writeInt(2);
+                    out.writeInt(Cx);
+                    out.writeInt(Cy);
+                    out.flush();
+                    resposta = in.readUTF();
+                    System.out.println(resposta);
+                    break;
+                case 3:
+                    System.out.print("Coordenada x: ");
+                    userInput = systemIn.readLine();
+                    Cx = Integer.parseInt(userInput);
+                    System.out.print("Coordenada y: ");
+                    userInput = systemIn.readLine();
+                    Cy = Integer.parseInt(userInput);
+                    out.writeInt(3);
+                    out.writeInt(Cx);
+                    out.writeInt(Cy);
+                    out.flush();
+                    resposta = in.readUTF();
+                    System.out.println(resposta);
                     break;
                 default:
                     System.out.println("Insira opção valida");
