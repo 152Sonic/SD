@@ -12,6 +12,7 @@ public class Cliente {
                 tokens[1],
                 Integer.parseInt(tokens[2]),
                 Integer.parseInt(tokens[3]),
+                false,
                 false);
     }
 
@@ -63,18 +64,31 @@ public class Cliente {
                     b = in.readBoolean();
                     resposta = in.readUTF();
                     System.out.println(resposta);
-                    System.out.print("Coordenada x: ");
-                    userInput = systemIn.readLine();
-                    int x = Integer.parseInt(userInput);
-                    System.out.print("Coordenada y: ");
-                    userInput = systemIn.readLine();
-                    int y = Integer.parseInt(userInput);
-                    out.writeInt(x);
-                    out.writeInt(y);
-                    out.flush();
-                    resposta = in.readUTF();
-                    System.out.println(resposta);
-                    if(b) flag = 1;
+                    if(b){
+                        System.out.print("Esta doente? [S/N] ");
+                        userInput =systemIn.readLine();
+                        String estado = userInput.toUpperCase();
+                        out.writeUTF(us);
+                        out.writeUTF(estado);
+                        out.flush();
+                        b = in.readBoolean();
+                        resposta = in.readUTF();
+                        System.out.println(resposta);
+                        if(b) {
+                            System.out.print("Coordenada x: ");
+                            userInput = systemIn.readLine();
+                            int x = Integer.parseInt(userInput);
+                            System.out.print("Coordenada y: ");
+                            userInput = systemIn.readLine();
+                            int y = Integer.parseInt(userInput);
+                            out.writeInt(x);
+                            out.writeInt(y);
+                            out.flush();
+                            resposta = in.readUTF();
+                            System.out.println(resposta);
+                            flag = 1;
+                        }
+                    }
                     break;
                 case 2:
                     System.out.print("Username: ");
@@ -89,7 +103,7 @@ public class Cliente {
                     System.out.print("Coordenada Y: ");
                     userInput = systemIn.readLine();
                     int yRegisto = Integer.parseInt(userInput);
-                    Utilizador u = new Utilizador(usRegisto,passRegisto,xRegisto,yRegisto,false);
+                    Utilizador u = new Utilizador(usRegisto,passRegisto,xRegisto,yRegisto,false,false);
                     System.out.println(u.toString());
                     u.serialize(out);
                     resposta = in.readUTF();
@@ -100,6 +114,8 @@ public class Cliente {
                     out.flush();
                     resposta = String.valueOf(in.readInt());
                     System.out.println(resposta);
+                    break;
+                case 4:
                     break;
                 default:
                     System.out.println("Insira opção valida");

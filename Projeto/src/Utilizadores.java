@@ -1,7 +1,9 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -20,10 +22,10 @@ public class Utilizadores {
         this.l = new ReentrantReadWriteLock();
         this.users = new HashMap<>();
 
-        users.put("MariaBia13", new Utilizador("MariaBia13", "130300", 4, 5, false));
-        users.put("TekasGG", new Utilizador("TekasGG", "161100", 1, 1, false));
-        users.put("Xico_Franco", new Utilizador("Xico_Franco", "231299", 4, 5, true));
-        users.put("MariaQB", new Utilizador("MariaQB", "280900", 5, 7, false));
+        users.put("MariaBia13", new Utilizador("MariaBia13", "130300", 4, 5, false,false));
+        users.put("TekasGG", new Utilizador("TekasGG", "161100", 1, 1, false,false));
+        users.put("Xico_Franco", new Utilizador("Xico_Franco", "231299", 4, 5, true,false));
+        users.put("MariaQB", new Utilizador("MariaQB", "280900", 5, 7, false,false));
 
     }
 
@@ -54,16 +56,18 @@ public class Utilizadores {
         String nome = in.readUTF();
         String pass = in.readUTF();
         rl.lock();
+        String p = "";
         try{
-            if(users.containsKey(nome)){
+            if(users.containsKey(nome)) {
                 Utilizador aux = users.get(nome);
-                if(aux.getPass().equals(pass)) {
-                    return nome;
+                if(!aux.isOnline()) {
+                    if (aux.getPass().equals(pass)) {
+                        aux.setOnline(true);
+                        p = nome;
+                    }
                 }
-                else return "";
             }
-            else
-                return "";
+            return p;
         }finally{
             rl.unlock();
         }
@@ -116,13 +120,25 @@ public class Utilizadores {
         }
     }
 
-    public void atualizaLoc(DataInputStream in, String u) throws IOException {
+    public void atualizaLoc(DataInputStream in, String u, Map<Localizacao, List<String>> loca) throws IOException {
         int x = in.readInt();
         int y = in.readInt();
         lock.lock();
         try{
             int xa = users.get(u).getX();
             int ya = users.get(u).getY();
+            Localizacao l = new Localizacao(x,y);
+            List<String> nomes = loca.get(l);
+            if(nomes != null) {
+                if(!nomes.contains(u))
+                    nomes.add(u);
+            }
+            else{
+                nomes = new ArrayList<>();
+                nomes.add(u);
+            }
+            System.out.println(nomes);
+            loca.put(l,nomes);
             users.get(u).setX(x);
             users.get(u).setY(y);
             if(quantosLoc(xa, ya) == 0) {
@@ -132,6 +148,21 @@ public class Utilizadores {
             lock.unlock();
         }
     }
+
+    public boolean estadoDoente(DataInputStream in) throws IOException{
+        String nome = in.readUTF();
+        String estado = in.readUTF();
+        boolean b = estado.equals("S");
+        lock.lock();
+        try {
+            users.get(nome).setDoente(b);
+            return b;
+        }finally {
+            lock.unlock();
+        }
+    }
+
+
 
     public void quero_ir(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException {
         Thread t = new Thread(new VerifyWorker(this,in,out));

@@ -3,10 +3,10 @@ public class Menu {
     public void menuLogin(){
         System.out.println();
         System.out.println("--------------- M E N U ---------------");
+        System.out.println("0 - Sair");
         System.out.println("1 - Login");
         System.out.println("2 - Criar registo");
         System.out.println("3 - Numero de utilizadores");
-        System.out.println("4 - Sair");
         System.out.println();
     }
 
@@ -17,5 +17,9 @@ public class Menu {
         System.out.println("1 - Numero de pessoas numa dada localizacao");
         System.out.println("2 - Atualizar localização atual");
         System.out.println("3 - Quero Ir");
+    }
+
+    public void mapaDoentes(){
+
     }
 }
