@@ -1,3 +1,7 @@
+package Servidor;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Objects;
 
 public class Localizacao {
@@ -25,6 +29,12 @@ public class Localizacao {
         this.y = y;
     }
 
+    public void serialize(DataOutputStream out) throws IOException {
+        out.writeInt(x);
+        out.writeInt(y);
+        out.flush();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -41,7 +51,7 @@ public class Localizacao {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Localizacao{");
+        final StringBuilder sb = new StringBuilder("Servidor.Servidor.Localizacao{");
         sb.append("x=").append(x);
         sb.append(", y=").append(y);
         sb.append('}');

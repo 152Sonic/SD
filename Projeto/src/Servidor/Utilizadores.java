@@ -1,17 +1,16 @@
+package Servidor;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Utilizadores {
-    private Map<String,Utilizador> users;
+    private Map<String, Utilizador> users;
     private ReentrantLock lock = new ReentrantLock();
     private ReentrantReadWriteLock l = new ReentrantReadWriteLock();
     private Lock rl = l.readLock();
@@ -22,15 +21,15 @@ public class Utilizadores {
         this.l = new ReentrantReadWriteLock();
         this.users = new HashMap<>();
 
-        users.put("MariaBia13", new Utilizador("MariaBia13", "130300", 4, 5, false,false));
-        users.put("TekasGG", new Utilizador("TekasGG", "161100", 1, 1, false,false));
-        users.put("Xico_Franco", new Utilizador("Xico_Franco", "231299", 4, 5, true,false));
-        users.put("MariaQB", new Utilizador("MariaQB", "280900", 5, 7, false,false));
+        users.put("MariaBia13", new Utilizador("MariaBia13", "130300", 4, 5, false,false,false));
+        users.put("TekasGG", new Utilizador("TekasGG", "161100", 1, 1, false,false,false));
+        users.put("Xico_Franco", new Utilizador("Xico_Franco", "231299", 4, 5, true,false,false));
+        users.put("MariaQB", new Utilizador("MariaQB", "280900", 5, 7, false,false,true));
 
     }
 
-    public Map<String,Utilizador> getusers(){
-        Map<String,Utilizador> aux = new HashMap<>();
+    public Map<String, Utilizador> getusers(){
+        Map<String, Utilizador> aux = new HashMap<>();
         for(Utilizador u : users.values()){
             aux.put(u.getNome(),u);
         }
@@ -137,7 +136,6 @@ public class Utilizadores {
                 nomes = new ArrayList<>();
                 nomes.add(u);
             }
-            System.out.println(nomes);
             loca.put(l,nomes);
             users.get(u).setX(x);
             users.get(u).setY(y);
@@ -149,17 +147,44 @@ public class Utilizadores {
         }
     }
 
-    public boolean estadoDoente(DataInputStream in) throws IOException{
+    public int estadoDoente(DataInputStream in) throws IOException{
         String nome = in.readUTF();
         String estado = in.readUTF();
-        boolean b = estado.equals("S");
+        int b = 0;
+        if(estado.equals("S"))
+            b = 2;
+        else if(estado.equals("N"))
+            b = 1;
         lock.lock();
         try {
-            users.get(nome).setDoente(b);
+            if(b != 0)
+                users.get(nome).setDoente(b == 2);
             return b;
         }finally {
             lock.unlock();
         }
+    }
+
+    public Map<Localizacao,Map.Entry<Integer,Integer>> mapa(Map<Localizacao,List<String>> localizacao){
+        Map<Localizacao,Map.Entry<Integer,Integer>> map = new HashMap<>();
+        int total;
+        int doentes = 0;
+        lock.lock();
+        try {
+            for (Map.Entry<Localizacao, List<String>> aux : localizacao.entrySet()) {
+                Localizacao l = aux.getKey();
+                for (String s : aux.getValue()) {
+                    if (this.users.get(s).isDoente())
+                        doentes++;
+                }
+                total = aux.getValue().size();
+                map.put(l, new AbstractMap.SimpleEntry<>(total, doentes));
+                doentes = 0;
+            }
+        }finally {
+            lock.unlock();
+        }
+        return map;
     }
 
 
