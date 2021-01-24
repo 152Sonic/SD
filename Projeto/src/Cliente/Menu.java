@@ -1,3 +1,5 @@
+package Cliente;
+import Servidor.*;
 import java.util.Map;
 
 public class Menu {

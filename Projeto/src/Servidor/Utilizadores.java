@@ -1,4 +1,4 @@
-import jdk.jshell.execution.Util;
+package Servidor;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Utilizadores {
-    private Map<String,Utilizador> users;
+    private Map<String, Utilizador> users;
     private ReentrantLock lock = new ReentrantLock();
     private ReentrantReadWriteLock l = new ReentrantReadWriteLock();
     private Lock rl = l.readLock();
@@ -21,15 +21,15 @@ public class Utilizadores {
         this.l = new ReentrantReadWriteLock();
         this.users = new HashMap<>();
 
-        users.put("MariaBia13", new Utilizador("MariaBia13", "130300", 4, 5, false,false));
-        users.put("TekasGG", new Utilizador("TekasGG", "161100", 1, 1, false,false));
-        users.put("Xico_Franco", new Utilizador("Xico_Franco", "231299", 4, 5, true,false));
-        users.put("MariaQB", new Utilizador("MariaQB", "280900", 5, 7, false,false));
+        users.put("MariaBia13", new Utilizador("MariaBia13", "130300", 4, 5, false,false,false));
+        users.put("TekasGG", new Utilizador("TekasGG", "161100", 1, 1, false,false,false));
+        users.put("Xico_Franco", new Utilizador("Xico_Franco", "231299", 4, 5, true,false,false));
+        users.put("MariaQB", new Utilizador("MariaQB", "280900", 5, 7, false,false,true));
 
     }
 
-    public Map<String,Utilizador> getusers(){
-        Map<String,Utilizador> aux = new HashMap<>();
+    public Map<String, Utilizador> getusers(){
+        Map<String, Utilizador> aux = new HashMap<>();
         for(Utilizador u : users.values()){
             aux.put(u.getNome(),u);
         }
@@ -147,13 +147,18 @@ public class Utilizadores {
         }
     }
 
-    public boolean estadoDoente(DataInputStream in) throws IOException{
+    public int estadoDoente(DataInputStream in) throws IOException{
         String nome = in.readUTF();
         String estado = in.readUTF();
-        boolean b = estado.equals("S");
+        int b = 0;
+        if(estado.equals("S"))
+            b = 2;
+        else if(estado.equals("N"))
+            b = 1;
         lock.lock();
         try {
-            users.get(nome).setDoente(b);
+            if(b != 0)
+                users.get(nome).setDoente(b == 2);
             return b;
         }finally {
             lock.unlock();

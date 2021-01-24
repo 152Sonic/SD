@@ -1,3 +1,5 @@
+package Servidor;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Objects;
@@ -49,7 +51,7 @@ public class Localizacao {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Localizacao{");
+        final StringBuilder sb = new StringBuilder("Servidor.Servidor.Localizacao{");
         sb.append("x=").append(x);
         sb.append(", y=").append(y);
         sb.append('}');
