@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Classe ServerWorker implementada com um Runnable
+ */
 class ServerWorker implements Runnable {
     private Socket socket;
     private Utilizadores users;
@@ -15,6 +18,12 @@ class ServerWorker implements Runnable {
     private ReentrantLock l;
     private Condition c;
 
+    /**
+     * Construtor parametrizado
+     * @param socket
+     * @param users
+     * @param loc
+     */
     public ServerWorker(Socket socket, Utilizadores users, Map<Localizacao,List<String>> loc){
         this.socket = socket;
         this.users = users;
@@ -24,6 +33,9 @@ class ServerWorker implements Runnable {
         this.c = l.newCondition();
     }
 
+    /**
+     * Função Run
+     */
     public void run (){
         try{
             DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
@@ -41,7 +53,14 @@ class ServerWorker implements Runnable {
         }
     }
 
-    public  int interpretadorLogin(DataInputStream in,DataOutputStream out) throws IOException{
+    /**
+     * Função utilizada para o interpretador do Loginn
+     * @param in DataInputStream onde recebemos o resultado do problema
+     * @param out DataOutputStream onde vamos colocar toda a informação
+     * @return Retorna o estado do programa
+     * @throws IOException
+     */
+    public int interpretadorLogin(DataInputStream in,DataOutputStream out) throws IOException{
         int flag =0;
         int c;
         String r;
@@ -106,6 +125,14 @@ class ServerWorker implements Runnable {
         return flag;
     }
 
+    /**
+     * Função utilizada para o interpretador do Loginn
+     * @param in DataInputStream onde recebemos o resultado do problema
+     * @param out DataOutputStream onde vamos colocar toda a informação
+     * @return Retorna o estado do programa
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public  int interpretadorServidor(DataInputStream in,DataOutputStream out) throws IOException, InterruptedException {
         int flag = 1;
         int c;

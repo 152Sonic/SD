@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
+/**
+ * Class Runnable para resolver um dos problemas básicos
+ */
 public class VerifyWorker implements Runnable{
     private DataOutputStream out;
     private int x;
@@ -13,6 +16,16 @@ public class VerifyWorker implements Runnable{
     private Condition c;
     private Utilizadores users;
 
+    /**
+     * Construtor parametrizado
+     * @param x
+     * @param y
+     * @param out
+     * @param users
+     * @param wl
+     * @param c
+     * @throws IOException
+     */
     public VerifyWorker(int x, int y,DataOutputStream out, Utilizadores users,Lock wl, Condition c) throws IOException {
         this.users = users;
         this.x =x;
@@ -22,12 +35,14 @@ public class VerifyWorker implements Runnable{
         this.c = c;
 
     }
+
+    /**
+     * Função run
+     */
     public void run() {
-        System.out.println("ç");
         wl.lock();
         try {
             while (users.quantosLoc(x,y) > 0) {
-                System.out.println("l");
                 c.await();
             }
             out.writeUTF("Localização livre");

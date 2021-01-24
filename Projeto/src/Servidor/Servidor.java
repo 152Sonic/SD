@@ -8,9 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * Classe principal do Servidor
+ */
 public class Servidor {
 
+    /**
+     * Metodo main do Servidor
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         Utilizadores users = new Utilizadores();
         ServerSocket ss = new ServerSocket(12345);

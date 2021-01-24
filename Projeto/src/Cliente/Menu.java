@@ -2,8 +2,14 @@ package Cliente;
 import Servidor.*;
 import java.util.Map;
 
+/**
+ * Classe utilizada para imprimir informações
+ */
 public class Menu {
 
+    /**
+     * Função utilizada para imprimir o menu inicial
+     */
     public void menuLogin(){
         System.out.println();
         System.out.println("--------------- M E N U ---------------");
@@ -14,6 +20,9 @@ public class Menu {
         System.out.println();
     }
 
+    /**
+     * Função utilizada para imprimir o menu secundário
+     */
     public void menuClienteServidor(){
         System.out.println();
         System.out.println("--------------- C L I E N T E ---------------");
@@ -24,6 +33,10 @@ public class Menu {
         System.out.println("4 - Mapa de localizacoes");
     }
 
+    /**
+     * Função  utilizada para imprimir o mapa de localizações
+     * @param mapa Mapa que obtém a localização e o número de utilizadores que já visitaram e o número de doentes
+     */
     public void mapaDoentes(Map<Localizacao, Map.Entry<Integer,Integer>> mapa){
         int cX = 0;
         int cY;

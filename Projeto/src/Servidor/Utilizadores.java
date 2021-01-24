@@ -8,6 +8,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * Classe Utilizadores
+ */
 public class Utilizadores {
     private Map<String, Utilizador> users;
     private ReentrantReadWriteLock l = new ReentrantReadWriteLock();
@@ -15,6 +18,9 @@ public class Utilizadores {
     private Lock wl = l.writeLock();
     private Condition c = wl.newCondition();
 
+    /**
+     * Construtor vazio
+     */
     public Utilizadores (){
         this.l = new ReentrantReadWriteLock();
         this.users = new HashMap<>();
@@ -26,6 +32,10 @@ public class Utilizadores {
 
     }
 
+    /**
+     * Funcção que obtém a variavel users
+     * @return Retorna users
+     */
     public Map<String, Utilizador> getusers(){
         Map<String, Utilizador> aux = new HashMap<>();
         for(Utilizador u : users.values()){
@@ -34,6 +44,12 @@ public class Utilizadores {
         return aux;
     }
 
+    /**
+     * Função que cria um registo novo
+     * @param in DataInputStream onde recebemos o resultado do problema
+     * @return Retorna como correu o  novo  registo
+     * @throws IOException
+     */
     public boolean registar(DataInputStream in) throws IOException {
         Utilizador u = Utilizador.deserialize(in);
         wl.lock();
@@ -49,6 +65,12 @@ public class Utilizadores {
         }
     }
 
+    /**
+     * Função que efetua o login
+     * @param in DataInputStream onde recebemos o resultado do problema
+     * @return Retorna o utilizador com sessão iniciada
+     * @throws IOException
+     */
     public String login(DataInputStream in) throws IOException{
         String nome = in.readUTF();
         String pass = in.readUTF();
@@ -70,23 +92,12 @@ public class Utilizadores {
         }
     }
 
-    public void numeroLocalizacoes (DataOutputStream out, DataInputStream in) throws IOException{
-        int x = in.readInt();
-        int y = in.readInt();
-        int total = 0;
-        rl.lock();
-        try{
-            for(Utilizador u : users.values()){
-                if(u.getX() == x && u.getY() == y)
-                    total++;
-            }
-            out.writeInt(total);
-            out.flush();
-        }finally{
-            rl.unlock();
-        }
-    }
-
+    /**
+     * Função que calcula o número de utilizadores numa dada localização
+     * @param in DataInputStream onde recebemos o resultado do problema
+     * @return Retorna o número de utilizadores na localização
+     * @throws IOException
+     */
     public int quantosLoc(DataInputStream in) throws IOException{
         int total = 0;
         int x = in.readInt();
@@ -103,7 +114,13 @@ public class Utilizadores {
         }
     }
 
-    public int quantosLoc(int x, int y) throws IOException{
+    /**
+     * Funçaõ que obtém o número de utilizadores numa dada localização
+     * @param x Coordenada x da localização
+     * @param y Coordenada y da localização
+     * @return Retorna o  número de utilizadores na localização
+     */
+    public int quantosLoc(int x, int y) {
         int total =0;
         rl.lock();
         try {
@@ -117,6 +134,13 @@ public class Utilizadores {
         }
     }
 
+    /**
+     * Função qie atualiza a localização de um dado utilizador
+     * @param in DataInputStream onde recebemos o resultado do problema
+     * @param u Nome do utilizador
+     * @param loca Mapa das localizações em histórico
+     * @throws IOException
+     */
     public void atualizaLoc(DataInputStream in, String u, Map<Localizacao, List<String>> loca) throws IOException {
         int x = in.readInt();
         int y = in.readInt();
@@ -145,6 +169,12 @@ public class Utilizadores {
         }
     }
 
+    /**
+     * Função que atualiza estado de doente do utilizador
+     * @param in DataInputStream onde recebemos o resultado do problema
+     * @return Retorna um inteiro para posterior comparação de dados
+     * @throws IOException
+     */
     public int estadoDoente(DataInputStream in) throws IOException{
         String nome = in.readUTF();
         String estado = in.readUTF();
@@ -163,6 +193,11 @@ public class Utilizadores {
         }
     }
 
+    /**
+     * Função que obtém, em todas as localizações, o número total de utilizadores que já lá estiveram e o número de doentes.
+     * @param localizacao Mapa de localizações em histórico
+     * @return
+     */
     public Map<Localizacao,Map.Entry<Integer,Integer>> mapa(Map<Localizacao,List<String>> localizacao){
         Map<Localizacao,Map.Entry<Integer,Integer>> map = new HashMap<>();
         int total;
@@ -185,8 +220,14 @@ public class Utilizadores {
         return map;
     }
 
-
-
+    /**
+     * Função que obtém a permissão para saber se podemos ou não mudar de localização
+     * @param x Coordenada x
+     * @param y Coordenada y
+     * @param out DataOutputStream onde vamos colocar toda a informação
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public void quero_ir(int x, int y, DataOutputStream out) throws IOException, InterruptedException {
         Thread t = new Thread(new VerifyWorker(x, y, out,this, wl, c));
         t.start();

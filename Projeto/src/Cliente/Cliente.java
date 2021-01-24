@@ -4,8 +4,16 @@ import java.net.Socket;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Classe do Cliente
+ */
 public class Cliente {
 
+    /**
+     * Função utilizada para criar um novo utilizador
+     * @param userInput String onde está a informação do mesmo
+     * @return Retorna o novo Utilizador
+     */
     public static Utilizador parseLine(String userInput) {
         String [] tokens = userInput.split(" ");
         return new Utilizador(
@@ -18,6 +26,11 @@ public class Cliente {
                 false);
     }
 
+    /**
+     * Main do Cliente
+     * @param args
+     * @throws IOException
+     */
     public static void main(String [] args) throws IOException {
         int flag = 0;
         Socket socket = new Socket("localhost", 12345);
@@ -38,6 +51,16 @@ public class Cliente {
         socket.close();
     }
 
+    /**
+     * Função que pertence ao interpretador do login
+     * @param systemIn Informação lida pelo teclado
+     * @param in DataInputStream onde recebemos o resultado do problema
+     * @param out DataOutputStream onde vamos colocar toda a informação
+     * @param readC Classe ClienteRead
+     * @param writeC Classe ClienteWirte
+     * @return Retorna a flag para posterior saber o estado da função
+     * @throws IOException
+     */
     public static int interpretadorLogin(BufferedReader systemIn, DataInputStream in, DataOutputStream out, ClienteRead readC, ClienteWrite writeC) throws IOException {
         Menu m = new Menu();
         boolean b;
@@ -88,6 +111,16 @@ public class Cliente {
 
     }
 
+    /**
+     * Função que pertence ao interpretador do servidor
+     * @param systemIn Informação lida pelo teclado
+     * @param in DataInputStream onde recebemos o resultado do problema
+     * @param out DataOutputStream onde vamos colocar toda a informação
+     * @param writeC Classe ClienteWirte
+     * @param readC Classe ClienteRead
+     * @return Retorna a flag para posterior saber o estado da função
+     * @throws IOException
+     */
     public static int interpretadorServidor(BufferedReader systemIn, DataInputStream in, DataOutputStream out, ClienteWrite writeC, ClienteRead readC) throws IOException{
         Menu m = new Menu();
         int flag = 1;
@@ -129,7 +162,7 @@ public class Cliente {
                         }
                         break;
                     case 4:
-                        writeC.mapaLocalizacoes(out, systemIn);
+                        writeC.mapaLocalizacoes(out);
                         int r = in.readInt();
                         if (r == 1) {
                             Map<Localizacao, Map.Entry<Integer, Integer>> mapa = readC.mapaLocalizacoes(in);
