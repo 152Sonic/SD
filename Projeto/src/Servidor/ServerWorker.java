@@ -131,7 +131,9 @@ class ServerWorker implements Runnable {
                     out.flush();
                     break;
                 case 3:
-                    users.quero_ir(in, out);
+                    int x = in.readInt();
+                    int y = in.readInt();
+                    users.quero_ir(x,y, out);
                     break;
                 case 4:
                     Utilizador uti = this.users.getusers().get(u);

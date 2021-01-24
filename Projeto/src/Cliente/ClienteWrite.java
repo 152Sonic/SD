@@ -111,10 +111,10 @@ public class ClienteWrite {
     public void queroIR(DataOutputStream out, BufferedReader systemIn) throws IOException{
         System.out.print("Coordenada x: [0-9] ");
         userInput = systemIn.readLine();
-        x = Integer.parseInt(userInput);
+        int x = Integer.parseInt(userInput);
         System.out.print("Coordenada y: [0-9] ");
         userInput = systemIn.readLine();
-        y = Integer.parseInt(userInput);
+        int y = Integer.parseInt(userInput);
         out.writeInt(3);
         out.writeInt(x);
         out.writeInt(y);

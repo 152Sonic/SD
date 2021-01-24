@@ -1,8 +1,7 @@
 package Servidor;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -11,11 +10,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Utilizadores {
     private Map<String, Utilizador> users;
-    private ReentrantLock lock = new ReentrantLock();
     private ReentrantReadWriteLock l = new ReentrantReadWriteLock();
     private Lock rl = l.readLock();
     private Lock wl = l.writeLock();
-    private Condition c = lock.newCondition();
+    private Condition c = wl.newCondition();
 
     public Utilizadores (){
         this.l = new ReentrantReadWriteLock();
@@ -122,7 +120,7 @@ public class Utilizadores {
     public void atualizaLoc(DataInputStream in, String u, Map<Localizacao, List<String>> loca) throws IOException {
         int x = in.readInt();
         int y = in.readInt();
-        lock.lock();
+        wl.lock();
         try{
             int xa = users.get(u).getX();
             int ya = users.get(u).getY();
@@ -143,7 +141,7 @@ public class Utilizadores {
                 c.signalAll();
             }
         }finally{
-            lock.unlock();
+            wl.unlock();
         }
     }
 
@@ -155,13 +153,13 @@ public class Utilizadores {
             b = 2;
         else if(estado.equals("N"))
             b = 1;
-        lock.lock();
+        wl.lock();
         try {
             if(b != 0)
                 users.get(nome).setDoente(b == 2);
             return b;
         }finally {
-            lock.unlock();
+            wl.unlock();
         }
     }
 
@@ -169,7 +167,7 @@ public class Utilizadores {
         Map<Localizacao,Map.Entry<Integer,Integer>> map = new HashMap<>();
         int total;
         int doentes = 0;
-        lock.lock();
+        wl.lock();
         try {
             for (Map.Entry<Localizacao, List<String>> aux : localizacao.entrySet()) {
                 Localizacao l = aux.getKey();
@@ -182,43 +180,16 @@ public class Utilizadores {
                 doentes = 0;
             }
         }finally {
-            lock.unlock();
+            wl.unlock();
         }
         return map;
     }
 
 
 
-    public void quero_ir(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException {
-        Thread t = new Thread(new VerifyWorker(this,in,out));
+    public void quero_ir(int x, int y, DataOutputStream out) throws IOException, InterruptedException {
+        Thread t = new Thread(new VerifyWorker(x, y, out,this, wl, c));
         t.start();
-    }
-
-    private static class VerifyWorker implements Runnable{
-        private ReentrantLock l = new ReentrantLock();
-        private Condition c = l.newCondition();
-        private Utilizadores users;
-        private DataInputStream in;
-        private DataOutputStream out;
-
-        public VerifyWorker(Utilizadores users, DataInputStream in, DataOutputStream out){
-            this.users = users;
-            this.in = in;
-            this.out = out;
-        }
-        public void run() {
-            l.lock();
-            try {
-                while (users.quantosLoc(in) > 0)
-                    c.await();
-                out.writeUTF("Localização livre");
-                out.flush();
-            }catch(IOException | InterruptedException e){
-                e.printStackTrace();
-            } finally{
-                l.unlock();
-            }
-        }
     }
 }
 
